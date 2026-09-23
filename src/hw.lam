@@ -268,10 +268,10 @@ check t2_8b: closed, hnf, not nf
 task 3.1 (хвост списка)
 -- Задайте без Y терм tail: tail [] = [], tail [5, 10, 13] = [10, 13].
 
-tailLast := \x. pair (inr a) nil
-tailNotLast := \x. pair (inr a) (cons (fst b) (snd b))
+tailCaseNLast := \x pHT. pair false (pair x (cons (fst pHT) (snd pHT)))
+tailStepFunc := \h pBpHT. if (fst pBpHT) (pair false (pair h nil)) (tailCaseNLast h (snd pBpHT))
 
-tail := \l. snd (fold l (\a b. either (fst b) (tailLast) (tailNotLast)) (pair (inl nil) nil))
+tail := \l. snd (snd (fold l tailStepFunc (pair true (pair 0 nil))))
 check tail: normalizing, avoids Y
 expect tail nil = nil
 expect tail (cons 5 (cons 10 (cons 13 nil))) = cons 10 (cons 13 nil)
@@ -304,3 +304,6 @@ expect reverse nil = nil
 -- (б) Доказательство. Пусть дан терм M. Покажите, как подобрать такой терм N в
 -- нормальной форме, что N I =β M. (Для математиков: докажите, что для каждого M
 -- существует N в нормальной форме такой, что N I =β M.)
+
+-- N := \x. x M
+-- N I = (\x. x M) =β I M =β M
